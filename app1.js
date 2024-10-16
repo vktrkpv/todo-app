@@ -9,7 +9,7 @@ const filterOption = document.querySelector(".filter-todo");
 document.addEventListener('DOMContentLoaded',getTodos);
 todoButton.addEventListener("click", addTodo);
 todoList.addEventListener("click", deleteCheck);
-filterOption.addEventListener("change", filterTodo);
+filterOption.addEventListener("click", filterTodo);
 
 
 // Functions
@@ -43,56 +43,56 @@ function addTodo(e) {
 }
 
 function deleteCheck(e) {
+
     const item = e.target;
 
-    if (item.classList[0] === "trash-btn") {
-        const todo = item.parentElement; 
+    if(item.classList[0] === "trash-btn") {
+        const todo = item.parentElement;
         todo.classList.add('fall');
-        todo.addEventListener("transitionend", () => {
-            removeLocalTodos(todo); 
+        todo.addEventListener("transitioned", e => {
+            removeLocalTodos(todo);
             todo.remove();
-        });
+        })
     }
 
-    if (item.classList[0] === "complete-btn") {
+    if(item.classList[0] === "complete-btn") {
         const todo = item.parentElement;
         todo.classList.toggle("completed");
         filterTodo({ target: { value: filterOption.value } }); 
     }
+
 }
-
-
 
 function filterTodo(e) {
     const todos = todoList.children;
 
-    requestAnimationFrame(() => {
-        Array.from(todos).forEach(function(todo) {
-            switch (e.target.value) {
-                case "all":
-                    todo.style.display = 'flex';
-                    break;
-                case "completed":
-                    if (todo.classList.contains('completed')) {
-                        todo.style.display = 'flex';
-                    } else {
-                        todo.style.display = 'none';
-                    }
-                    break;
-                case "uncompleted":
-                    if (!todo.classList.contains('completed')) {
-                        todo.style.display = 'flex';
-                    } else {
-                        todo.style.display = 'none';
-                    }
-                    break;
+    todos.forEach(function(todo){
+        switch(e.target.value){
+            case "all": 
+            todo.style.display = 'flex';
+            break;
+
+            case "completed": 
+            if(todo.classList.contains('completed')){
+                todo.style.display = 'flex';
+            }  else{
+                todo.style.display = 'none';
             }
-        });
-    });
+            break;
+
+            case "uncompleted": 
+            if(!todo.classList.contains('completed')){
+                todo.style.display = 'flex';
+            }  else{
+                todo.style.display = 'none';
+            }
+            break;
+
+        }
+
+    })
+
 }
-
-
-
 
 function saveLocalTodos(todo) {
 
@@ -109,17 +109,20 @@ function saveLocalTodos(todo) {
 
 }
 
-function removeLocalTodos(todo) {
-    let todos;
-    if (localStorage.getItem('todos') === null) {
+function removeLocalTodos() {
+
+    console.log("remove");
+
+    if(localStorage.getItem('todos') === null){
         todos = [];
-    } else {
-        todos = JSON.parse(localStorage.getItem('todos'));
+    }
+    else {todos = JSON.parse(localStorage.getItem('todos'));
     }
 
     const todoIndex = todo.children[0].innerText;
     todos.splice(todos.indexOf(todoIndex), 1);
     localStorage.setItem('todos', JSON.stringify(todos));
+
 }
 
 function getTodos() {
